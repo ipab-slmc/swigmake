@@ -244,7 +244,7 @@ macro(SWIG_ADD_SOURCE_TO_MODULE name outfiles infile)
 
   if(swig_source_file_cplusplus)
     set(swig_generated_file_fullname
-      "${swig_generated_file_fullname}.${SWIG_CXX_EXTENSION}")
+      "${swig_generated_file_fullname}.cxx")
   else()
     set(swig_generated_file_fullname
       "${swig_generated_file_fullname}.c")
