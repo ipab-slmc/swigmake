@@ -87,7 +87,13 @@ function(add_swig_matlab_module target i_file)
 			OUTPUT_NAME ${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename}MEX
 	        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 	        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-		)
+                )
+
+        set(swig_extra_generated_files ${swig_extra_generated_files} "${CMAKE_CURRENT_BINARY_DIR}/SwigGet.m")
+        set(swig_extra_generated_files ${swig_extra_generated_files} "${CMAKE_CURRENT_BINARY_DIR}/SwigMem.m")
+        set(swig_extra_generated_files ${swig_extra_generated_files} "${CMAKE_CURRENT_BINARY_DIR}/SwigRef.m")
+        SWIG_GET_PACKAGE_NAME(swig_package_name "${i_file}")
+
         if(${catkin_FOUND})
           # Setup catkin devel-space
           set_target_properties(${SWIG_MODULE_${target}_REAL_NAME} PROPERTIES
@@ -104,12 +110,19 @@ function(add_swig_matlab_module target i_file)
           foreach(file IN LISTS swig_extra_generated_files)
             add_custom_command(TARGET ${SWIG_MODULE_${target}_REAL_NAME} COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/Matlab)
           endforeach(file)
+          add_custom_command(TARGET ${SWIG_MODULE_${target}_REAL_NAME} COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/+${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename}" "${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/Matlab/+${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename}")
+
+          message(STATUS "All variables:")
+          get_cmake_property(_variableNames VARIABLES)
+          foreach (_variableName ${_variableNames})
+              message(STATUS "${_variableName}=${${_variableName}}")
+          endforeach()
         endif()
 
 	if (swigmat_DESTINATION)
 		install(TARGETS ${SWIG_MODULE_${target}_REAL_NAME} DESTINATION ${swigmat_DESTINATION})
-		# foreach(file IN LISTS swig_extra_generated_files)
-		# 	install(FILES ${file} DESTINATION ${swigmat_DESTINATION})
-		# endforeach(file)
+                foreach(file IN LISTS swig_extra_generated_files)
+                    install(FILES ${file} DESTINATION ${swigmat_DESTINATION})
+                endforeach(file)
 	endif()
 endfunction()
