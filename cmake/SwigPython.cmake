@@ -127,7 +127,9 @@ function(add_swig_python_module target i_file)
 	# Tell swig to also look for .i interface files in these folders
 	foreach(dir IN LISTS swigpy_SWIG_INCLUDE_DIRS)
 		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${dir}")
-	endforeach(dir)
+        endforeach(dir)
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${CMAKE_CURRENT_SOURCE_DIR}/../swig")
+        message(warning "Swig include path: '${CMAKE_CURRENT_SOURCE_DIR}/../swig'")
 
 	# Use "modern" python classes to resolve
 	# https://github.com/casadi/casadi/issues/1364

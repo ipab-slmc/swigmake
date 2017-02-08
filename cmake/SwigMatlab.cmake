@@ -69,7 +69,9 @@ function(add_swig_matlab_module target i_file)
 	# Tell swig to also look for .i interface files in these folders
 	foreach(dir IN LISTS swigmat_SWIG_INCLUDE_DIRS)
 		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${dir}")
-	endforeach(dir)
+        endforeach(dir)
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${CMAKE_CURRENT_SOURCE_DIR}/../swig")
+        message(warning "Swig include path: '${CMAKE_CURRENT_SOURCE_DIR}/../swig'")
 
 
 	# Tell swig to build matlab bindings for our target library and link them against the C++ library. 
