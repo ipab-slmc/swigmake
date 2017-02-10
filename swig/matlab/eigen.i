@@ -89,7 +89,6 @@
         out->coeffRef(i,j) = data[i + rows*j];
       }
     }
-
     return true;
   };
 
@@ -289,13 +288,23 @@
   $1 = temp;
 }
 
+%typemap(in, fragment="Eigen_Fragments") const Eigen::Ref<const CLASS >& (CLASS temp, boost::shared_ptr<Eigen::Ref<const CLASS >> temp_ref)
+{
+  if (!ConvertFromMatlabToEigenMatrix<CLASS >(&temp, $input)) SWIG_fail;
+  temp_ref.reset( new Eigen::Ref<const CLASS >(temp));
+  $1 = temp_ref.get();
+}
+
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY)
     CLASS,
     const CLASS &,
     CLASS const &,
     Eigen::MatrixBase< CLASS >,
     const Eigen::MatrixBase< CLASS > &,
-    CLASS &
+    CLASS &,
+    const Eigen::Ref<const CLASS >&,
+    Eigen::Ref<CLASS>&,
+    Eigen::Ref<CLASS>
   {
     $1 = mxIsNumeric($input);
   }
@@ -305,13 +314,5 @@
   {
     $1 = mxIsCell($input) && ((mxGetNumberOfElements($input) == 0) || mxIsNumeric(mxGetCell($input, 0)));
   }
-
-%typemap(in, fragment="Eigen_Fragments") const Eigen::Ref<const CLASS >& (CLASS temp)
-{
-  if (!ConvertFromMatlabToEigenMatrix<CLASS >(&temp, $input))
-    SWIG_fail;
-  Eigen::Ref<const CLASS > temp_ref(temp);
-  $1 = &temp_ref;
-}
 
 %enddef
