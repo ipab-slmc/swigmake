@@ -26,12 +26,13 @@
 
 include(CMakeParseArguments)
 
+set(SWIG_PATH_TOP "${CMAKE_CURRENT_LIST_DIR}/../")
 
 function(add_swig_python_module target i_file)
 	# Parse our arguments and make sure we got the required ones
 	set(options CPLUSPLUS)
 	set(oneValueArgs)
-	set(multiValueArgs INCLUDE_DIRS LINK_LIBRARIES SWIG_INCLUDE_DIRS DESTINATION)
+        set(multiValueArgs INCLUDE_DIRS LINK_LIBRARIES SWIG_INCLUDE_DIRS DESTINATION)
 	cmake_parse_arguments(swigpy "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 	if (NOT target)
 		message(FATAL_ERROR "Error using add_swig_python_module: Please provide a unique cmake target name as the first argument")
@@ -128,8 +129,8 @@ function(add_swig_python_module target i_file)
 	foreach(dir IN LISTS swigpy_SWIG_INCLUDE_DIRS)
 		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${dir}")
         endforeach(dir)
-        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${CMAKE_CURRENT_SOURCE_DIR}/../swig")
-        message(warning "Swig include path: '${CMAKE_CURRENT_SOURCE_DIR}/../swig'")
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${SWIG_PATH_TOP}/../swig")
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${SWIG_PATH_TOP}/../swigmake/swig")
 
 	# Use "modern" python classes to resolve
 	# https://github.com/casadi/casadi/issues/1364
@@ -165,7 +166,7 @@ function(add_swig_python_module target i_file)
 	# Automatically install to the correct subfolder if the swig module has a "package" declared
 	if (swig_package_name)
 		string(REGEX REPLACE "\\." "/" swigpy_package_path ${swig_package_name})
-	endif()
+        endif()
 
 	foreach(dir IN LISTS swigpy_DESTINATION)
 		install(TARGETS ${SWIG_MODULE_${target}_REAL_NAME} DESTINATION ${dir}/${swigpy_package_path})

@@ -26,11 +26,13 @@
 
 include(CMakeParseArguments)
 
+set(SWIG_PATH_TOP "${CMAKE_CURRENT_LIST_DIR}/../")
+
 function(add_swig_matlab_module target i_file)
 	# Parse our arguments and make sure we got the required ones
 	set(options CPLUSPLUS)
 	set(oneValueArgs DESTINATION )
-	set(multiValueArgs INCLUDE_DIRS LINK_LIBRARIES SWIG_INCLUDE_DIRS)
+        set(multiValueArgs INCLUDE_DIRS LINK_LIBRARIES SWIG_INCLUDE_DIRS)
 	cmake_parse_arguments(swigmat "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 	if (NOT target)
 		message(FATAL_ERROR "Error using add_swig_matlab_module: Please provide a unique cmake target name as the first argument")
@@ -70,8 +72,8 @@ function(add_swig_matlab_module target i_file)
 	foreach(dir IN LISTS swigmat_SWIG_INCLUDE_DIRS)
 		set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${dir}")
         endforeach(dir)
-        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${CMAKE_CURRENT_SOURCE_DIR}/../swig")
-        message(warning "Swig include path: '${CMAKE_CURRENT_SOURCE_DIR}/../swig'")
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${SWIG_PATH_TOP}/../swig")
+        set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} "-I${SWIG_PATH_TOP}/../swigmake/swig")
 
 
 	# Tell swig to build matlab bindings for our target library and link them against the C++ library. 
@@ -113,6 +115,7 @@ function(add_swig_matlab_module target i_file)
             add_custom_command(TARGET ${SWIG_MODULE_${target}_REAL_NAME} COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/Matlab)
           endforeach(file)
           add_custom_command(TARGET ${SWIG_MODULE_${target}_REAL_NAME} COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/+${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename}" "${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_SHARE_DESTINATION}/Matlab/+${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename}")
+
 
           message(STATUS "All variables:")
           get_cmake_property(_variableNames VARIABLES)
