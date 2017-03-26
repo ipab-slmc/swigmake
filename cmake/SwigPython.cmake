@@ -160,6 +160,8 @@ function(add_swig_python_module target i_file)
           endforeach(file)
         endif()
 
+        add_custom_command(TARGET ${SWIG_MODULE_${target}_REAL_NAME} COMMAND ${CMAKE_COMMAND} -E touch "${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION}/__init__.py")
+
 	# Make sure the resulting library has the correct name, even if the cmake target has a different name
 	set_target_properties(${SWIG_MODULE_${target}_REAL_NAME} PROPERTIES OUTPUT_NAME _${SWIG_GET_EXTRA_OUTPUT_FILES_module_basename})
 
