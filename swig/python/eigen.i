@@ -341,13 +341,23 @@
   $1 = temp;
 }
 
+%typemap(in, fragment="Eigen_Fragments") const Eigen::Ref<const CLASS >& (CLASS temp, boost::shared_ptr<Eigen::Ref<const CLASS >> temp_ref)
+{
+  if (!ConvertFromNumpyToEigenMatrix<CLASS >(&temp, $input)) SWIG_fail;
+  temp_ref.reset( new Eigen::Ref<const CLASS >(temp));
+  $1 = temp_ref.get();
+}
+
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY)
     CLASS,
     const CLASS &,
     CLASS const &,
     Eigen::MatrixBase< CLASS >,
     const Eigen::MatrixBase< CLASS > &,
-    CLASS &
+    CLASS &,
+    const Eigen::Ref<const CLASS >&,
+    Eigen::Ref<CLASS>&,
+    Eigen::Ref<CLASS>
   {
     $1 = is_array($input);
   }
@@ -357,13 +367,5 @@
   {
     $1 = PyList_Check($input) && ((PyList_Size($input) == 0) || is_array(PyList_GetItem($input, 0)));
   }
-
-%typemap(in, fragment="Eigen_Fragments") const Eigen::Ref<const CLASS >& (CLASS temp)
-{
-  if (!ConvertFromNumpyToEigenMatrix<CLASS >(&temp, $input))
-    SWIG_fail;
-  Eigen::Ref<const CLASS > temp_ref(temp);
-  $1 = &temp_ref;
-}
 
 %enddef
