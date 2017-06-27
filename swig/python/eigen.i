@@ -348,6 +348,12 @@
   $1 = temp_ref.get();
 }
 
+%typemap(argout, fragment="Eigen_Fragments") Eigen::Ref< CLASS >
+{
+    if (!CopyFromEigenToNumPyMatrix<CLASS >($input, (CLASS*)&$1))
+      SWIG_fail;
+}
+
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY)
     CLASS,
     const CLASS &,
